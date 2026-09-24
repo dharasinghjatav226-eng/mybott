@@ -1,3 +1,5 @@
+from flask import Flask
+import threading
 import requests, re
 import os
 import telebot
@@ -5,6 +7,15 @@ from datetime import datetime
 import pytz
 TOKEN = os.environ.get("BOT_TOKEN")
 bot = telebot.TeleBot(TOKEN)
+app = Flask('')
+@app.route('/')
+def home():
+    return "Bot is running!"
+def run():
+    app.run(host='0.0.0.0', port=10000)
+def keep_alive():
+    t = threading.Thread(target=run)
+    t.start()
 def get_live_weather(city="Indore"):
     try:
         geo_url = f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=1&language=en&format=json"
@@ -45,4 +56,5 @@ def handle(message):
         print(e)
 
 print("Bot chal raha hai...")
+keep_alive()
 bot.polling()
